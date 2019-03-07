@@ -1,3 +1,4 @@
+-- Week 1
 module Warmup where
 
 -- Ex. 1
