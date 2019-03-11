@@ -32,27 +32,11 @@ foldTree = foldr add Leaf
             Node ht (add a left) p right
         | otherwise =
             let right' = add a right
-            in  Node (height right' + 1) left p right'
+             in Node (height right' + 1) left p right'
     height Leaf = -1
     height (Node ht _ _ _) = ht
     slope Leaf = undefined
     slope (Node _ left _ right) = height left - height right
-
-visualize :: Tree Char -> String
-visualize tree = unlines $ transpose $ padRight columns
-  where
-    columns = draw tree
-    len = maximum $ map length columns
-    padRight = map $ take len . (++ repeat ' ')
-    draw Leaf = ["_"]
-    draw (Node 0 _ a _) = [[a]]
-    draw (Node _ left a right) = indent left ++ [a] : indent right
-    indent = map (" " ++) . draw
-
-trace :: Char -> Char -> IO ()
-trace from to = putStr $ unlines $ do
-    c <- [from..to]
-    return $ visualize $ foldTree [c, pred c..'A']
 
 
 -- Ex. 3
@@ -69,8 +53,7 @@ myFoldl f = flip $ foldr (\b k a -> k $ f a b) id
 -- Ex. 4
 sieveSundaram :: Integer -> [Integer]
 sieveSundaram n
-    = (2 :)
-    . map ((+ 1) . (* 2))
+    = map ((+ 1) . (* 2))
     . filter (not . (`elem` marked))
     $ [1..n]
   where

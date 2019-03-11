@@ -1,7 +1,9 @@
 module Main where
 
-import Log
+import Log hiding (MessageTree(..))
 import LogAnalysis
+import HigherOrder (Tree(..), foldTree)
+import Data.List (transpose)
 
 main :: IO ()
 main = printSorted "src/error.log"
@@ -21,3 +23,21 @@ printSorted filename = do
     stringify (LogMessage (Error _) _ msg) = "[Err]  " ++ msg
     unknown (Unknown _) = True
     unknown _ = False
+
+visualize :: Tree Char -> String
+visualize tree = unlines $ transpose $ padRight columns
+  where
+    columns = draw tree
+    len = maximum $ map length columns
+    padRight = map $ take len . (++ repeat ' ')
+    draw Leaf = ["_"]
+    draw (Node 0 _ a _) = [[a]]
+    draw (Node _ left a right) = indent left ++ [a] : indent right
+    indent = map (" " ++) . draw
+
+trace :: Char -> Char -> IO ()
+trace from to = putStr $ unlines $ do
+    c <- [from..to]
+    return $ visualize $ foldTree [c, pred c..'A']
+
+
