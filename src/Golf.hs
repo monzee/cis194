@@ -9,7 +9,7 @@ import Data.List (group, sort, transpose)
 -- decreases each index by 1 then calls the (!!) operator on the list with the
 -- indices. The outer comprehension just counts from 1 to the length of the list.
 skips :: [a] -> [[a]]
-skips l = [[l !! (i - 1) | i <- [n, 2*n..length l]] | n <- [1..length l]]
+skips l = [[l !! pred i | i <- [n, 2*n..length l]] | n <- [1..length l]]
 
 
 -- Ex. 2
@@ -23,12 +23,12 @@ localMaxima l = [b | (a, b, c) <- zip3 l (drop 1 l) (drop 2 l), b > a && b > c]
 
 -- Ex. 3
 -- Make a frequency list by sorting and grouping the original list (append [0..9]
--- to ensure that each digit has a value in the resulting frequency list).  Turn
--- the grouped digits into a number by counting the elements and subtracting 1 to
--- compensate for the filler. Then convert it into a string by mapping it to a
+-- to ensure that each digit is represented in the resulting frequency list).
+-- Turn the grouped digits into a number by counting the elements and subtracting
+-- 1 to compensate for the filler. Convert it into a string by mapping it to a
 -- string of '*' with the corresponding lengths. Right-justify the strings to the
 -- highest frequency in the list so that the list can be transposed.  Transpose,
--- then append the divider and labels, then join the list into a string.
+-- append the divider and labels, then implode the lines into a string.
 histogram :: [Integer] -> String
 histogram l
     =  unlines
