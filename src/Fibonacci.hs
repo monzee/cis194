@@ -2,8 +2,9 @@
 {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
 -- Week 6
-module Laziness where
+module Fibonacci where
 
+import Data.List (intersperse)
 
 -- Ex. 1
 fib :: Integer -> Integer
@@ -25,7 +26,13 @@ data Stream a = Stream a (Stream a)
 
 instance Show a => Show (Stream a)
   where
-    show = show . take 20 . streamToList
+    show
+        = ("[" ++) . (++ "...]")
+        . concat
+        . intersperse ","
+        . map show
+        . take 20
+        . streamToList
 
 streamToList :: Stream a -> [a]
 streamToList (Stream first rest) = first : streamToList rest
@@ -50,7 +57,7 @@ ruler :: Stream Integer
 ruler = join $ streamMap streamRepeat nats
   where
     join (Stream (Stream x xs) xss) = Stream x $ interleave (join xss) xs
-    interleave (Stream x xs) (Stream y ys) = Stream x $ Stream y $ interleave xs ys
+    interleave (Stream x xs) ys = Stream x $ interleave ys xs
 
 
 -- Ex. 6

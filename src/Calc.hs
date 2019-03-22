@@ -1,7 +1,7 @@
 {-# LANGUAGE FlexibleInstances #-}
 
 -- Week 5
-module TypeClasses where
+module Calc where
 
 import qualified Data.Map as M
 import qualified ExprT
