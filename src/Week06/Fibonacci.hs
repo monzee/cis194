@@ -1,10 +1,10 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# OPTIONS_GHC -fno-warn-missing-methods #-}
 
--- Week 6
-module Fibonacci where
+module Week06.Fibonacci where
 
 import Data.List (intersperse)
+
 
 -- Ex. 1
 fib :: Integer -> Integer
@@ -67,15 +67,15 @@ x = Stream 0 $ Stream 1 $ streamRepeat 0
 instance Num (Stream Integer)
   where
     fromInteger n = Stream n $ streamRepeat 0
-    negate (Stream x xs) = Stream (negate x) (negate xs)
-    (Stream x xs) + (Stream y ys) = Stream (x + y) (xs + ys)
+    negate = streamMap negate
+    (Stream x xs) + (Stream y ys) = Stream (x + y) $ xs + ys
     (Stream a0 a') * b@(Stream b0 b') = Stream (a0 * b0) $ streamMap (* a0) b' + a'*b
 
 instance Fractional (Stream Integer)
   where
     (Stream a0 a') / (Stream b0 b') = q
       where
-        q = Stream (a0 `div` b0) $ streamMap (`div` b0) (a' - q*b')
+        q = Stream (a0 `div` b0) $ streamMap (`div` b0) $ a' - q*b'
 
 fibs3 :: Stream Integer
 fibs3 = x / (1 - x - x^2)

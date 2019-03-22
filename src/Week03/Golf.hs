@@ -1,5 +1,4 @@
--- Week 3
-module Golf where
+module Week03.Golf where
 
 import Data.List (group, sort, transpose)
 

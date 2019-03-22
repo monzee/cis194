@@ -1,12 +1,12 @@
 module Main where
 
-import Log hiding (MessageTree(..))
-import LogAnalysis
-import HigherOrder (Tree(..), foldTree)
+import Week02.Log hiding (MessageTree(..))
+import Week02.LogAnalysis
+import Week04.HigherOrder (Tree(..), foldTree)
 import Data.List (transpose)
 
 main :: IO ()
-main = printSorted "src/error.log"
+main = printSorted "src/Week02/error.log"
 
 printSorted :: String -> IO ()
 printSorted filename = do

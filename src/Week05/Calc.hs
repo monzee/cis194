@@ -1,12 +1,11 @@
 {-# LANGUAGE FlexibleInstances #-}
 
--- Week 5
-module Calc where
+module Week05.Calc where
 
 import qualified Data.Map as M
-import qualified ExprT
-import qualified Parser
-import qualified StackVM (Program, StackExp(..))
+import qualified Week05.ExprT as ExprT
+import qualified Week05.Parser as Parser
+import qualified Week05.StackVM as StackVM (Program, StackExp(..))
 
 
 -- Ex. 1

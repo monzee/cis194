@@ -1,9 +1,9 @@
 {-# OPTIONS_GHC -Wall #-}
 
--- Week 2
-module LogAnalysis where
+module Week02.LogAnalysis where
 
-import Log (MessageType(..), LogMessage(..), MessageTree(..))
+import Week02.Log (MessageType(..), LogMessage(..), MessageTree(..))
+
 
 -- Ex. 1
 parseMessage :: String -> LogMessage
@@ -17,6 +17,7 @@ parseMessage = parse' . words
 parse :: String -> [LogMessage]
 parse = map parseMessage . lines
 
+
 -- Ex. 2
 insert :: LogMessage -> MessageTree -> MessageTree
 insert (Unknown _) tree = tree
@@ -26,14 +27,17 @@ insert msg@(LogMessage _ ts _) (Node left current@(LogMessage _ ts' _) right)
     | ts <= ts' = Node (insert msg left) current right
     | otherwise = Node left current (insert msg right)
 
+
 -- Ex. 3
 build :: [LogMessage] -> MessageTree
 build = foldl (flip insert) Leaf
+
 
 -- Ex. 4
 inOrder :: MessageTree -> [LogMessage]
 inOrder Leaf = []
 inOrder (Node left msg right) = inOrder left ++ [msg] ++ inOrder right
+
 
 -- Ex. 5
 whatWentWrong :: [LogMessage] -> [String]
@@ -43,6 +47,7 @@ whatWentWrong = map message . filter (errorsAtLeast 50) . inOrder . build
     errorsAtLeast _ _ = False
     message (LogMessage _ _ msg) = msg
     message (Unknown msg) = msg
+
 
 -- Ex. 6
 culprit :: String

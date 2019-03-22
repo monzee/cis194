@@ -1,7 +1,7 @@
--- Week 4
-module HigherOrder where
+module Week04.HigherOrder where
 
 import Data.List (transpose)
+
 
 -- Ex. 1
 fun1' :: [Integer] -> Integer
