@@ -1,6 +1,14 @@
 {-# LANGUAGE FlexibleInstances #-}
 
-module Week07.JoinList where
+module Week07.JoinList
+    ( JoinList(..)
+    , (+++)
+    , indexJ
+    , dropJ
+    , takeJ
+    , scoreLine
+    , main
+    ) where
 
 import Week07.Sized (Sized, Size(..), size, getSize)
 import Week07.Scrabble (Score(..), scoreString)
@@ -34,6 +42,7 @@ indexJ :: (Sized b, Monoid b) => Int -> JoinList b a -> Maybe a
 indexJ _ Empty = Nothing
 indexJ i _ | i < 0 = Nothing
 indexJ 0 (Single _ a) = Just a
+indexJ _ (Single {}) = Nothing
 indexJ i node@(Append _ left right)
     | i >= sizeOf node = Nothing
     | i >= sizeOf left = indexJ (i - sizeOf left) right
@@ -46,9 +55,7 @@ dropJ _ (Single {}) = Empty
 dropJ n node@(Append _ left right)
     | n >= sizeOf node = Empty
     | n >= sizeOf left = dropJ (n - sizeOf left) right
-    | otherwise =
-        let left' = dropJ n left
-         in Append (tag left' <> tag right) left' right
+    | otherwise = dropJ n left +++ right
 
 takeJ :: (Sized b, Monoid b) => Int -> JoinList b a -> JoinList b a
 takeJ _ Empty = Empty
@@ -57,9 +64,7 @@ takeJ _ leaf@(Single {}) = leaf
 takeJ n node@(Append _ left right)
     | n >= sizeOf node = node
     | n <= sizeOf left = takeJ n left
-    | otherwise =
-        let right' = takeJ (n - sizeOf left) right
-         in Append (tag left <> tag right') left right'
+    | otherwise = left +++ takeJ (n - sizeOf left) right
 
 
 -- Ex. 3
@@ -80,11 +85,9 @@ instance Buffer (JoinList (Score, Size) String)
       where
         fromList [] = Empty
         fromList [a] = Single (scoreString a, Size 1) a
-        fromList xs = Append (tag left <> tag right) left right
+        fromList xs = fromList left +++ fromList right
           where
-            (prefix, suffix) = splitAt (length xs `div` 2) xs
-            left = fromList prefix
-            right = fromList suffix
+            (left, right) = splitAt (length xs `div` 2) xs
 
     line = indexJ
 
@@ -102,13 +105,13 @@ instance Buffer (JoinList (Score, Size) String)
     value (Append (Score s, _) _ _) = s
 
 
+initialBuffer :: JoinList (Score, Size) String
+initialBuffer = fromString $ unlines
+    [ "This buffer is for notes you don't want to save, and for"
+    , "evaluation of steam valve coefficients."
+    , "To load a different file, type the character L followed"
+    , "by the name of the file."
+    ]
+
 main :: IO ()
 main = runEditor editor initialBuffer
-  where
-    initialBuffer :: JoinList (Score, Size) String
-    initialBuffer = fromString $ unlines
-         [ "This buffer is for notes you don't want to save, and for"
-         , "evaluation of steam valve coefficients."
-         , "To load a different file, type the character L followed"
-         , "by the name of the file."
-         ]
