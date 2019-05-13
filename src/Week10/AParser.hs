@@ -56,11 +56,14 @@ posInt = Parser f
 -- Your code goes below here
 ------------------------------------------------------------
 
-
--- Ex. 1
 applyToFirst :: (a -> b) -> (a, c) -> (b, c)
 applyToFirst f (a, c) = (f a, c)
 
+ignore :: Applicative f => f a -> f ()
+ignore = (*> pure ())
+
+
+-- Ex. 1
 instance Functor Parser
   where
     fmap f (Parser p) = Parser (fmap (applyToFirst f) . p)
@@ -69,8 +72,8 @@ instance Functor Parser
 -- Ex. 2
 instance Applicative Parser
   where
-    pure a = Parser (Just . (a,))
-    (Parser f) <*> (Parser p) = Parser $ \src -> do
+    pure a = Parser $ Just . (a,)
+    Parser f <*> Parser p = Parser $ \src -> do
         (f', src') <- f src
         applyToFirst f' <$> p src'
 
@@ -80,7 +83,7 @@ abParser :: Parser (Char, Char)
 abParser = (,) <$> char 'a' <*> char 'b'
 
 abParser_ :: Parser ()
-abParser_ = abParser *> pure ()
+abParser_ = ignore abParser
 
 intPair :: Parser [Integer]
 intPair = (\a b -> [a, b]) <$> posInt <* char ' ' <*> posInt
@@ -90,10 +93,10 @@ intPair = (\a b -> [a, b]) <$> posInt <* char ' ' <*> posInt
 instance Alternative Parser
   where
     empty = Parser $ const Nothing
-    (Parser left) <|> (Parser right) = Parser $ \src -> left src <|> right src
+    Parser left <|> Parser right = Parser $ \src -> left src <|> right src
 
 
 -- Ex. 5
 intOrUppercase :: Parser ()
-intOrUppercase = (posInt <|> satisfy isUpper *> pure 0) *> pure ()
+intOrUppercase = ignore posInt <|> ignore (satisfy isUpper)
 
