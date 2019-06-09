@@ -35,20 +35,20 @@ data Battlefield = Battlefield { attackers :: Army, defenders :: Army }
 
 -- Ex. 2
 battle :: Battlefield -> Rand StdGen Battlefield
-battle (Battlefield {attackers = a, defenders = d}) = do
-    matchups <- zipWith compare <$> roll a <*> roll d
+battle Battlefield {attackers = a, defenders = d} = do
+    matchups <- zipWith compare <$> roll (min 3 $ a - 1) <*> roll (min 2 d)
     let (Sum aLosses, Sum dLosses) = foldMap fight matchups
     return $ Battlefield (a - aLosses) (d - dLosses)
   where
-    roll n = sortOn Down <$> replicateM n die
+    roll n   = sortOn Down <$> replicateM n die
     fight GT = (Sum 0, Sum 1)
-    fight _ = (Sum 1, Sum 0)
+    fight _  = (Sum 1, Sum 0)
 
 
 -- Ex. 3
 invade :: Battlefield -> Rand StdGen Battlefield
-invade b@(Battlefield {attackers = a, defenders = d})
-    | a == 0 || d == 0 = return b
+invade b@Battlefield {attackers = a, defenders = d}
+    | a < 2 || d == 0 = return b
     | otherwise = battle b >>= invade
 
 
